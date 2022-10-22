@@ -11,6 +11,7 @@ public class Raceplusplus implements ModInitializer {
     @Override
     public void onInitialize() {
         Xor7IO.modId=id;
+        Map3D map=new Map3D("","test.txt");
         new Xor7Runnable(){
             @Override
             public void run() {
@@ -18,7 +19,7 @@ public class Raceplusplus implements ModInitializer {
                 if(server!=null && server.getPlayerManager()!=null){
                     GameRule.init();
                     Command.initCommand();
-                    Config.getInstance().toml.getString("a");
+                    //Config.getInstance().toml.getString("a");
                     Xor7IO.println("Race Plus Plus Mod加载完成.");
                     this.stop();
                 }
