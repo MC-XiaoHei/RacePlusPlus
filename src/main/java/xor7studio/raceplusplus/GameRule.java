@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameRule {
+    public static Map3D map3D=new Map3D(".","test.txt");
     public static Power JumpPower=new Power(0.5,0.1);
     public static Vec2f parseDirection(float direction,double length){
         double x,z,delta=direction*MathHelper.PI/180.00;
@@ -50,6 +51,7 @@ public class GameRule {
                 if(!ArgonLibrary.server.isRunning()) this.stop();
                 List<ServerPlayerEntity> players=new CopyOnWriteArrayList<>(ArgonLibrary.server.getPlayerManager().getPlayerList());
                 for (PlayerEntity player : players) {
+                    Xor7IO.println(String.valueOf(map3D.inWhichSection(1,player.getPos())));
                     check(player.getBlockPos().add(0,-1,0),player);
                 }
             }

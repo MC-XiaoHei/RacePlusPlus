@@ -1,5 +1,6 @@
 package xor7studio.raceplusplus;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import xor7studio.util.Xor7File;
 
@@ -59,10 +60,13 @@ public class Map3D {
     public int inWhichSection(int basic, Vec3d p){
         int flag=1;
         for(int i=1;i<=roundSectionNum;i++){
-            if(inSection(basic,p)) return basic;
+            if(basic>0 && inSection(basic,p)) return basic;
             basic+=flag*i;
             flag*=-1;
         }
         return -1;
+    }
+    public int getPos(PlayerEntity player){
+        
     }
 }

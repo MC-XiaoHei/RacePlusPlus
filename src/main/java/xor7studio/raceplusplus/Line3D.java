@@ -19,14 +19,5 @@ public class Line3D {
         return ((distanceToBegin+distanceToEnd) *
                 (distanceToBegin-distanceToEnd) /
                 doubleLen) + halfLen;
-        /*
-           Begin
-            |\
-            | \
-            |  \
-            |
-            |
-            |
-         */
     }
 }

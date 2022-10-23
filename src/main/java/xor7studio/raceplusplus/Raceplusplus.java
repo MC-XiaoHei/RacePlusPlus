@@ -11,7 +11,6 @@ public class Raceplusplus implements ModInitializer {
     @Override
     public void onInitialize() {
         Xor7IO.modId=id;
-        Map3D map=new Map3D("","test.txt");
         new Xor7Runnable(){
             @Override
             public void run() {
