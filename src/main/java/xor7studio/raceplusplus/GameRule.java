@@ -2,6 +2,7 @@ package xor7studio.raceplusplus;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
@@ -37,7 +38,6 @@ public class GameRule {
                         .getBlock()
                         .getName()
                         .getString();
-        Xor7IO.println(data);
         switch (data) {
 
             case "Block of Diamond" -> giveVelocity(player, JumpPower,player.getYaw());
@@ -51,11 +51,11 @@ public class GameRule {
                 if(!ArgonLibrary.server.isRunning()) this.stop();
                 List<ServerPlayerEntity> players=new CopyOnWriteArrayList<>(ArgonLibrary.server.getPlayerManager().getPlayerList());
                 for (PlayerEntity player : players) {
-                    Xor7IO.println(String.valueOf(map3D.inWhichSection(1,player.getPos())));
+                    player.sendMessage(Text.of("pos:"+map3D.getPos(player)),true);
                     check(player.getBlockPos().add(0,-1,0),player);
-                }
+                }//tp mc_xiaohei 0 100 40
             }
-        }.start(1);
+        }.start(1000);
     }
     public static class Power{
         public Power(double xPower,double yPower){
