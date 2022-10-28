@@ -2,6 +2,7 @@ package xor7studio.raceplusplus;
 
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import xor7studio.argonlibrary.ArgonLibrary;
+import xor7studio.argonlibrary.Scoreboard;
 import xor7studio.util.Xor7IO;
 
 import static net.minecraft.server.command.CommandManager.literal;
@@ -13,6 +14,7 @@ public class Command {
             .requires(source -> source.hasPermissionLevel(4))
             .executes(context -> {
                 ArgonLibrary.server=context.getSource().getServer();
+                Scoreboard scoreboard=new Scoreboard(5,"test");
                 Xor7IO.println("command run.");
                 return 1;
             }));

@@ -12,9 +12,11 @@ import java.util.Scanner;
 
 public class Map3D {
     private final Map<Integer, Line3D> sections;
+    private Map<String,PlayerInfo> playersInfo;
     public int roundSectionNum,roundNum;
     public Map3D(String path,String filename){
         sections=new HashMap<>();
+        playersInfo=new HashMap<>();
         sections.put(0,new Line3D(new Vec3d(0,0,0),new Vec3d(0,0,0),0));
         try {
             Scanner scanner = new Scanner(new Xor7File(path,filename).file);
@@ -52,6 +54,9 @@ public class Map3D {
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }
+    }
+    public PlayerInfo getPlayerInfo(String uuid){
+        return playersInfo.get(uuid);
     }
     public Vec3d readPoint(@NotNull Scanner scanner){
         return new Vec3d(scanner.nextDouble(),scanner.nextDouble(),scanner.nextDouble());
