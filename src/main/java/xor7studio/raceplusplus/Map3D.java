@@ -4,6 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import xor7studio.util.Xor7File;
+import xor7studio.util.Xor7IO;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -54,6 +55,20 @@ public class Map3D {
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }
+        for(int key: sections.keySet()){
+            String out=key+" ";
+            out+=sections.get(key);
+            Xor7IO.println(out);
+        }
+    }
+    public void update(@NotNull PlayerEntity player){
+        String uuid=player.getUuidAsString();
+        if(!playersInfo.containsKey(uuid))
+            playersInfo.put(uuid,new PlayerInfo());
+        PlayerInfo info=new PlayerInfo();
+        info.section=inWhichSection(getPlayerInfo(uuid).section,player.getPos());
+        info.pos=getPos(player, info.section);
+        playersInfo.replace(uuid,info);
     }
     public PlayerInfo getPlayerInfo(String uuid){
         return playersInfo.get(uuid);
@@ -79,11 +94,16 @@ public class Map3D {
             i=i>0?-1-i:1-i;
         }return -1;
     }
-    public int getPos(@NotNull PlayerEntity player){
-        return getPos(player.getPos());
+    public int getPos(@NotNull PlayerEntity player,int sec){
+        return getPos(player.getPos(),sec);
     }
-    public int getPos(@NotNull Vec3d p){
-        Line3D section=getSection(inWhichSection(1,p));
-        return (int) (section.getPos(p)+section.preSum-section.length);
+    public int getPos(@NotNull Vec3d p,int sec){
+        Line3D section=getSection(sec);
+        try {
+            return (int) (section.getPos(p)+section.preSum-section.length);
+        }catch (NullPointerException e){
+            Xor7IO.println(String.valueOf(sec));
+        }
+        return 0;
     }
 }

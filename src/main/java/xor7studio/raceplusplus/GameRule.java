@@ -51,11 +51,12 @@ public class GameRule {
                 if(!ArgonLibrary.server.isRunning()) this.stop();
                 List<ServerPlayerEntity> players=new CopyOnWriteArrayList<>(ArgonLibrary.server.getPlayerManager().getPlayerList());
                 for (PlayerEntity player : players) {
-                    player.sendMessage(Text.of("pos:"+map3D.getPos(player)),true);
+                    map3D.update(player);
+                    player.sendMessage(Text.of("pos:"+map3D.getPlayerInfo(player.getUuidAsString()).pos),true);
                     check(player.getBlockPos().add(0,-1,0),player);
-                }//tp mc_xiaohei 0 100 40
+                }
             }
-        }.start(1000);
+        }.start(10);
     }
     public static class Power{
         public Power(double xPower,double yPower){
