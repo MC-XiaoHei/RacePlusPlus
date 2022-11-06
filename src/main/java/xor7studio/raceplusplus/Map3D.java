@@ -1,20 +1,25 @@
 package xor7studio.raceplusplus;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
+import xor7studio.argonlibrary.ArgonLibrary;
 import xor7studio.util.Xor7File;
-import xor7studio.util.Xor7IO;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Map3D {
     private final Map<Integer, Line3D> sections;
     private Map<String,PlayerInfo> playersInfo;
-    public int roundSectionNum,roundNum;
+    public int roundSectionNum,roundNum,mapLength;
+    public long startTime=0;
+    private boolean runFlag=false;
     public Map3D(String path,String filename){
         sections=new HashMap<>();
         playersInfo=new HashMap<>();
@@ -49,25 +54,56 @@ public class Map3D {
                     lastPoint=p;
                     j++;
                 }
-
             }
+            mapLength= (int) lastPreSum+1;
             scanner.close();
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }
-        for(int key: sections.keySet()){
-            String out=key+" ";
-            out+=sections.get(key);
-            Xor7IO.println(out);
-        }
+    }
+    public boolean start(){
+        if(runFlag) return false;
+        runFlag=true;
+        startTime=System.currentTimeMillis();
+        playersInfo=new HashMap<>();
+        List<ServerPlayerEntity> players=new CopyOnWriteArrayList<>(ArgonLibrary.server.getPlayerManager().getPlayerList());
+        Vec3d p=sections.get(1).begin;
+        for (PlayerEntity player : players)
+            player.teleport(p.x,p.y,p.z);
+        return true;
+    }
+    public Time getTimeDifference(long begin,long end){
+        Time res=new Time();
+        long difference=end-begin;
+        res.second=difference/1000.00;
+        res.minute=((int)res.second)/60;
+        res.second-=res.minute*60;
+        return res;
+    }
+    public Time getGameTime(){
+        return getGameTime(System.currentTimeMillis());
+    }
+    public Time getGameTime(long time){
+        return getTimeDifference(startTime,System.currentTimeMillis());
     }
     public void update(@NotNull PlayerEntity player){
         String uuid=player.getUuidAsString();
         if(!playersInfo.containsKey(uuid))
             playersInfo.put(uuid,new PlayerInfo());
         PlayerInfo info=new PlayerInfo();
+        if(info.pos==-1) {
+            info.complete=true;
+            return;
+        }
         info.section=inWhichSection(getPlayerInfo(uuid).section,player.getPos());
         info.pos=getPos(player, info.section);
+        if(info.pos==-1) return;
+        info.round=info.pos/roundSectionNum;
+        for(int i=1;i<=info.pos;i++)
+            if(!info.arriveTime.containsKey(i))
+                info.arriveTime.put(i,System.currentTimeMillis());
+        for(int i=info.pos+1;i<=mapLength;i++)
+            info.arriveTime.remove(i);
         playersInfo.replace(uuid,info);
     }
     public PlayerInfo getPlayerInfo(String uuid){
@@ -102,8 +138,7 @@ public class Map3D {
         try {
             return (int) (section.getPos(p)+section.preSum-section.length);
         }catch (NullPointerException e){
-            Xor7IO.println(String.valueOf(sec));
+            return -1;
         }
-        return 0;
     }
 }

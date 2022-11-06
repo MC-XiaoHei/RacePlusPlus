@@ -11,13 +11,13 @@ public class Raceplusplus implements ModInitializer {
     @Override
     public void onInitialize() {
         Xor7IO.modId=id;
+        Command.initCommand();
         new Xor7Runnable(){
             @Override
             public void run() {
                 MinecraftServer server=ArgonLibrary.server;
                 if(server!=null && server.getPlayerManager()!=null){
                     GameRule.init();
-                    Command.initCommand();
                     //Config.getInstance().toml.getString("a");
                     Xor7IO.println("Race Plus Plus Mod加载完成.");
                     this.stop();
