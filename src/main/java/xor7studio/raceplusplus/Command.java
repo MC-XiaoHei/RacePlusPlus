@@ -15,7 +15,7 @@ public class Command {
             .requires(source -> source.hasPermissionLevel(4))
             .executes(context -> {
                 ArgonLibrary.server=context.getSource().getServer();
-                if(!GameRule.map3D.start())
+                if(!GameRule.getInstance().map3D.start())
                     context.getSource()
                             .getPlayer()
                             .sendMessage(Text.of("无法启动游戏:已经有一个在运行的游戏"),false);

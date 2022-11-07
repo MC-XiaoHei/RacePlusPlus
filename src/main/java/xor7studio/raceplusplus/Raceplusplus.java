@@ -17,7 +17,7 @@ public class Raceplusplus implements ModInitializer {
             public void run() {
                 MinecraftServer server=ArgonLibrary.server;
                 if(server!=null && server.getPlayerManager()!=null){
-                    GameRule.init();
+                    GameRule.getInstance().init();
                     //Config.getInstance().toml.getString("a");
                     Xor7IO.println("Race Plus Plus Mod加载完成.");
                     this.stop();
