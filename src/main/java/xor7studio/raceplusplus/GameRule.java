@@ -23,16 +23,28 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameRule {
     private static final GameRule Instance=new GameRule();
+    public GameRule() {
+    }
     public static GameRule getInstance(){return Instance;}
-    public final String SCOREBOARD_NAME="Race Plus Plus";
-    public final String SCOREBOARD_EG="";
+    public String scoreboardName ="Race Plus Plus";
+    public List<String> scoreboardData;
     public Map3D map3D=new Map3D(".\\world","rpp.data");
     public Map<String, SingleScoreboard> infoScoreboards=new HashMap<>();
-    public void updateScoreboard(ServerPlayerEntity player){
+    public void updateScoreboard(@NotNull ServerPlayerEntity player){
         if(!infoScoreboards.containsKey(player.getUuidAsString()))
             infoScoreboards.put(player.getUuidAsString(),
-                    new SingleScoreboard(player,SCOREBOARD_NAME));
-//        infoScoreboards.
+                    new SingleScoreboard(player, scoreboardName,scoreboardData.size()+1));
+        SingleScoreboard scoreboard=infoScoreboards.get(player.getUuidAsString());
+        PlayerInfo info=map3D.getPlayerInfo(player.getUuidAsString());
+        Time gt=map3D.getGameTime();
+        for(int i = 0; i< scoreboardData.size(); i++)
+            scoreboard.setLine(i+1,scoreboardData.get(i)
+                    .replace("${player.name}",player.getName().asString())
+                    .replace("${player.pos}",String.valueOf(info.pos))
+                    .replace("${player.round}",String.valueOf(info.round))
+                    .replace("${player.rank}",String.valueOf(info.rank))
+                    .replace("${game.time.sec}",String.valueOf(gt.second))
+                    .replace("${game.time.min}",String.valueOf(gt.minute)));
     }
     @Contract("_, _ -> new")
     public @NotNull Vec2f parseDirection(float direction, double length){
