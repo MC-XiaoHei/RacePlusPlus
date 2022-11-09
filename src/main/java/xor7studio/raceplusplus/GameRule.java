@@ -46,7 +46,7 @@ public class GameRule {
                     .replace("${game.time.sec}",String.valueOf(gt.second))
                     .replace("${game.time.min}",String.valueOf(gt.minute)));
     }
-    public List<String> getRankData(SingleScoreboard scoreboard,int basic){
+    public void setRankData(SingleScoreboard scoreboard,int basic){
 
     }
     @Contract("_, _ -> new")

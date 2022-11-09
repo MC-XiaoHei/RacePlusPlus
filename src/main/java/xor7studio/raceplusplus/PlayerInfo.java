@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerInfo {
+    public static Map<Integer,String> ranks=new HashMap<>();
     public int pos=0;
     public int section=0;
     public int round=0;
