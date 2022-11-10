@@ -5,7 +5,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import xor7studio.argonlibrary.ArgonLibrary;
-import xor7studio.util.Xor7File;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -20,12 +19,12 @@ public class Map3D {
     public int roundSectionNum,roundNum,mapLength;
     public long startTime=0;
     private boolean runFlag=false;
-    public Map3D(String path,String filename){
+    public Map3D(){
         sections=new HashMap<>();
         playersInfo=new HashMap<>();
         sections.put(0,new Line3D(new Vec3d(0,0,0),new Vec3d(0,0,0),0));
         try {
-            Scanner scanner = new Scanner(new Xor7File(path,filename).file);
+            Scanner scanner = new Scanner(Config.getInstance().getMapData());
             roundNum=scanner.nextInt();
             roundSectionNum=scanner.nextInt();
             scanner.nextLine();
@@ -43,7 +42,7 @@ public class Map3D {
                 }
                 scanner.close();
                 if(i<roundNum-1){
-                    scanner = new Scanner(new Xor7File(path,filename).file);
+                    scanner = new Scanner(Config.getInstance().getMapData());
                     scanner.nextInt();
                     scanner.nextInt();
                     scanner.nextLine();
@@ -84,7 +83,7 @@ public class Map3D {
         return getGameTime(System.currentTimeMillis());
     }
     public Time getGameTime(long time){
-        return getTimeDifference(startTime,System.currentTimeMillis());
+        return getTimeDifference(startTime,time);
     }
     public void update(@NotNull PlayerEntity player){
         String uuid=player.getUuidAsString();

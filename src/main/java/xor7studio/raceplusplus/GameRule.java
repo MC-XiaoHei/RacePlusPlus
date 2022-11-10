@@ -28,7 +28,7 @@ public class GameRule {
     public static GameRule getInstance(){return Instance;}
     public String scoreboardName ="Race Plus Plus";
     public List<String> scoreboardData;
-    public Map3D map3D=new Map3D(".\\world","rpp.data");
+    public Map3D map3D=new Map3D();
     public Map<String, SingleScoreboard> infoScoreboards=new HashMap<>();
     public void updateScoreboard(@NotNull ServerPlayerEntity player){
         if(!infoScoreboards.containsKey(player.getUuidAsString()))
