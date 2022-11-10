@@ -7,21 +7,19 @@ import org.jetbrains.annotations.NotNull;
 import xor7studio.argonlibrary.ArgonLibrary;
 
 import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Map3D {
     private final Map<Integer, Line3D> sections;
-    private Map<String,PlayerInfo> playersInfo;
+    public Map<String,PlayerInfo> playersInfo;
+    public Map<Integer,String> ranks;
     public int roundSectionNum,roundNum,mapLength;
     public long startTime=0;
     private boolean runFlag=false;
     public Map3D(){
         sections=new HashMap<>();
-        playersInfo=new HashMap<>();
+        playersInfo=new TreeMap<>();
         sections.put(0,new Line3D(new Vec3d(0,0,0),new Vec3d(0,0,0),0));
         try {
             Scanner scanner = new Scanner(Config.getInstance().getMapData());
@@ -60,11 +58,23 @@ public class Map3D {
             ex.printStackTrace();
         }
     }
+    public void updateRank(){
+        Map<Integer,String> newRanks=new HashMap<>();
+        List<Map.Entry<String,PlayerInfo>> entryList=new ArrayList<>(playersInfo.entrySet());
+        entryList.sort(new PlayerInfoPosComparator());
+        int rank=1;
+        for(Map.Entry<String, PlayerInfo> entry:entryList){
+            entry.getValue().rank=rank;
+            newRanks.put(rank,entry.getKey());
+            rank++;
+        }
+        ranks=newRanks;
+    }
     public boolean start(){
         if(runFlag) return false;
         runFlag=true;
         startTime=System.currentTimeMillis();
-        playersInfo=new HashMap<>();
+        playersInfo=new TreeMap<>();
         List<ServerPlayerEntity> players=new CopyOnWriteArrayList<>(ArgonLibrary.server.getPlayerManager().getPlayerList());
         Vec3d p=sections.get(1).begin;
         for (PlayerEntity player : players)
@@ -139,5 +149,11 @@ public class Map3D {
         }catch (NullPointerException e){
             return -1;
         }
+    }
+}
+class PlayerInfoPosComparator implements Comparator<Map.Entry>{
+    @Override
+    public int compare(Map.Entry o1, Map.Entry o2) {
+        return ((PlayerInfo)o2).pos-((PlayerInfo)o1).pos;
     }
 }
