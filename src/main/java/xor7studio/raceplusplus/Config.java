@@ -1,26 +1,40 @@
 package xor7studio.raceplusplus;
 
 import com.moandjiezana.toml.Toml;
+import xor7studio.util.Xor7File;
 import xor7studio.util.Xor7IO;
 import xor7studio.util.Xor7Toml;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class Config {
-    Xor7Toml toml;
+    Xor7Toml func_block,map_cfg;
     private static final Config INSTANCE = new Config();
     public static Config getInstance(){return INSTANCE;}
     public Set<PowerBlock> powerBlocks=new HashSet<>();
     public Set<EffectBlock> effectBlocks=new HashSet<>();
     private Config(){
         Xor7IO.modId=Raceplusplus.id;
-        toml=new Xor7Toml(".\\config","rpp-func-block.toml");
+        func_block =new Xor7Toml(
+                "."+ File.separator+"config"+ File.separator+"rpp",
+                "func-block.toml");
+        map_cfg =new Xor7Toml(
+                "."+ File.separator+"world",
+                "map-cfg.toml");
     }
-    public void load(){
-        List<Toml> powerBlocks=toml.getList("registry.powerBlocks"),
-                   effectBlocks=toml.getList("registry.effectBlocks");
+    public File getMapData(){
+        return new Xor7File("."+ File.separator+"world","rpp.data").file;
+    }
+    public void loadAll(){
+        List<String> powerBlocksToml= func_block.getList("registry.powerBlocks"),
+                   effectBlocksToml= func_block.getList("registry.effectBlocks");
+        for(String key:powerBlocksToml)
+            powerBlocks.add(func_block.getTable(key).to(PowerBlock.class));
+        for(String key:effectBlocksToml)
+            effectBlocks.add(func_block.getTable(key).to(EffectBlock.class));
         Xor7IO.println("Config loaded");
     }
 

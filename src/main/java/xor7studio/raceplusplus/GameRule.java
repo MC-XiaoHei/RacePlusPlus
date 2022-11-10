@@ -84,7 +84,7 @@ public class GameRule {
                 player.addStatusEffect(getEffect((StatusEffect) ArgonLibrary.getFromRegistry(block.effect,Registry.STATUS_EFFECT), block.duration));
     }
     public void init(){
-        Config.getInstance().load();
+        Config.getInstance().loadAll();
         Xor7IO.println("GameRule Running.");
         new Xor7Runnable(){
             @Override
