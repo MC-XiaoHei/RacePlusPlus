@@ -48,6 +48,7 @@ public class GameRule {
     }
     public void setRankData(SingleScoreboard scoreboard,int basic){
 
+
     }
     @Contract("_, _ -> new")
     public @NotNull Vec2f parseDirection(float direction, double length){
@@ -62,7 +63,6 @@ public class GameRule {
         player.velocityModified=true;
         Vec2f vec2f=parseDirection(direction, powerBlock.xPower);
         player.takeKnockback(1,-vec2f.x,-vec2f.y);
-
         player.setVelocity(player.getVelocity().add(0, powerBlock.yPower*0.1,0));
     }
     public void check(BlockPos blockPos,ServerPlayerEntity player){
@@ -74,14 +74,14 @@ public class GameRule {
                         .getString();
         execute(data,player);
     }
-    public StatusEffectInstance getEffect(StatusEffect effect,int duration){return new StatusEffectInstance(effect,duration,0,false,false,false);}
+    public StatusEffectInstance getEffect(StatusEffect effect,int duration,int level){return new StatusEffectInstance(effect,duration,level,false,false,false);}
     public void execute(String name,ServerPlayerEntity player){
         for(Config.PowerBlock block:Config.getInstance().powerBlocks)
             if(block.block.equals(name))
                 giveVelocity(player, block, player.getYaw());
         for(Config.EffectBlock block:Config.getInstance().effectBlocks)
             if(block.block.equals(name))
-                player.addStatusEffect(getEffect((StatusEffect) ArgonLibrary.getFromRegistry(block.effect,Registry.STATUS_EFFECT), block.duration));
+                player.addStatusEffect(getEffect((StatusEffect) ArgonLibrary.getFromRegistry(block.effect,Registry.STATUS_EFFECT), block.duration,block.level));
     }
     public void init(){
         Config.getInstance().loadAll();

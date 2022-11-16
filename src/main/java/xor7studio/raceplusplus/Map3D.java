@@ -108,9 +108,11 @@ public class Map3D {
         info.pos=getPos(player, info.section);
         if(info.pos==-1) return;
         info.round=info.pos/roundSectionNum;
+        long time=System.currentTimeMillis();
         for(int i=1;i<=info.pos;i++)
             if(!info.arriveTime.containsKey(i))
-                info.arriveTime.put(i,System.currentTimeMillis());
+                info.arriveTime.put(i,time);
+            else time=info.arriveTime.get(i);
         for(int i=info.pos+1;i<=mapLength;i++)
             info.arriveTime.remove(i);
         playersInfo.replace(uuid,info);
