@@ -27,7 +27,7 @@ public class GameRule {
     }
     public static GameRule getInstance(){return Instance;}
     public String scoreboardName ="Race Plus Plus";
-    public List<String> scoreboardData;
+    public List<String> scoreboardData=Config.getInstance().getScoreboardData();
     public Map3D map3D=new Map3D();
     public Map<String, SingleScoreboard> infoScoreboards=new HashMap<>();
     public void updateScoreboard(@NotNull ServerPlayerEntity player){
@@ -46,10 +46,13 @@ public class GameRule {
                     .replace("${game.time.sec}",String.valueOf(gt.second))
                     .replace("${game.time.min}",String.valueOf(gt.minute)));
     }
-    public void setRankData(SingleScoreboard scoreboard,int basic,int size){
-
-        for(int i=0;i<size;i++){
+    public void setRankData(SingleScoreboard scoreboard,int basic){
+        for(int i=0;i<scoreboardData.size();i++){
             int n=basic+i;
+            if(scoreboardData.contains("${rank.list.end}")) i= scoreboardData.size();
+            scoreboard.setLine(n,scoreboardData.get(n)
+                    .replace("${rank.list.end}",""));
+
         }
     }
     @Contract("_, _ -> new")

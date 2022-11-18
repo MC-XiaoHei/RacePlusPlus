@@ -1,11 +1,14 @@
 package xor7studio.raceplusplus;
 
-import com.moandjiezana.toml.Toml;
 import xor7studio.util.Xor7File;
 import xor7studio.util.Xor7IO;
 import xor7studio.util.Xor7Toml;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +30,30 @@ public class Config {
     }
     public File getMapData(){
         return new Xor7File("."+ File.separator+"world","rpp.data").file;
+    }
+    public List<String> getScoreboardData(){
+        File file=new Xor7File("."+File.separator+"world","scoreboard.data").file;
+        BufferedReader reader = null;
+        List<String> res=new ArrayList<>();
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String readStr;
+            while ((readStr = reader.readLine()) != null)
+                res.add(readStr);
+            reader.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+        return res;
     }
     public void loadAll(){
         List<String> powerBlocksToml= func_block.getList("registry.powerBlocks"),
