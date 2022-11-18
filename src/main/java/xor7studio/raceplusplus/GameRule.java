@@ -46,9 +46,11 @@ public class GameRule {
                     .replace("${game.time.sec}",String.valueOf(gt.second))
                     .replace("${game.time.min}",String.valueOf(gt.minute)));
     }
-    public void setRankData(SingleScoreboard scoreboard,int basic){
+    public void setRankData(SingleScoreboard scoreboard,int basic,int size){
 
-
+        for(int i=0;i<size;i++){
+            int n=basic+i;
+        }
     }
     @Contract("_, _ -> new")
     public @NotNull Vec2f parseDirection(float direction, double length){
