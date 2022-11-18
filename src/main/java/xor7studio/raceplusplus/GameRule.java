@@ -19,6 +19,7 @@ import xor7studio.util.Xor7Runnable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameRule {
@@ -46,13 +47,24 @@ public class GameRule {
                     .replace("${game.time.sec}",String.valueOf(gt.second))
                     .replace("${game.time.min}",String.valueOf(gt.minute)));
     }
-    public void setRankData(SingleScoreboard scoreboard,int basic){
+    public void setRankData(SingleScoreboard scoreboard,int basic,String playerUUID){
+        int size=1;
         for(int i=0;i<scoreboardData.size();i++){
+            if(scoreboardData.get(basic+i).contains("${rank.list.end}")) size=i;
+        }
+        int rank=map3D.getPlayerInfo(playerUUID).rank;
+        int tmp=size/2;
+        int start=rank>tmp?rank-tmp:1;
+        for(int i=0;i<size;i++){
             int n=basic+i;
-            if(scoreboardData.contains("${rank.list.end}")) i= scoreboardData.size();
-            scoreboard.setLine(n,scoreboardData.get(n)
-                    .replace("${rank.list.end}",""));
 
+            scoreboard.setLine(n,scoreboardData.get(n)
+                    .replace("${rank.list.end}","")
+                    .replace("${rank.list.data}", Objects.requireNonNull(
+                            ArgonLibrary.server
+                                    .getPlayerManager()
+                                    .getPlayer(map3D.ranks.get(start + i)))
+                            .getName().asString()));
         }
     }
     @Contract("_, _ -> new")
