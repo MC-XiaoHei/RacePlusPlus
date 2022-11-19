@@ -32,7 +32,7 @@ public class Config {
         return new Xor7File("."+ File.separator+"world","rpp.data").file;
     }
     public List<String> getScoreboardData(){
-        File file=new Xor7File("."+File.separator+"world","scoreboard.data").file;
+        File file=new Xor7File("."+ File.separator+"config"+ File.separator+"rpp","scoreboard.data").file;
         BufferedReader reader = null;
         List<String> res=new ArrayList<>();
         try {

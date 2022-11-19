@@ -38,14 +38,15 @@ public class GameRule {
         SingleScoreboard scoreboard=infoScoreboards.get(player.getUuidAsString());
         PlayerInfo info=map3D.getPlayerInfo(player.getUuidAsString());
         Time gt=map3D.getGameTime();
-        for(int i = 0; i< scoreboardData.size(); i++)
-            scoreboard.setLine(i+1,scoreboardData.get(i)
+        for(int i =0; i< scoreboardData.size(); i++)
+            scoreboard.setLine(i+1,scoreboardData.get(scoreboardData.size()-i-1)
                     .replace("${player.name}",player.getName().asString())
                     .replace("${player.pos}",String.valueOf(info.pos))
                     .replace("${player.round}",String.valueOf(info.round))
                     .replace("${player.rank}",String.valueOf(info.rank))
                     .replace("${game.time.sec}",String.valueOf(gt.second))
-                    .replace("${game.time.min}",String.valueOf(gt.minute)));
+                    .replace("${game.time.min}",String.valueOf(gt.minute))
+            );
     }
     public void setRankData(SingleScoreboard scoreboard,int basic,String playerUUID){
         int size=1;
@@ -57,7 +58,6 @@ public class GameRule {
         int start=rank>tmp?rank-tmp:1;
         for(int i=0;i<size;i++){
             int n=basic+i;
-
             scoreboard.setLine(n,scoreboardData.get(n)
                     .replace("${rank.list.end}","")
                     .replace("${rank.list.data}", Objects.requireNonNull(
@@ -110,6 +110,7 @@ public class GameRule {
                 List<ServerPlayerEntity> players=new CopyOnWriteArrayList<>(ArgonLibrary.server.getPlayerManager().getPlayerList());
                 for (ServerPlayerEntity player : players) {
                     map3D.update(player);
+                    updateScoreboard(player);
                     player.sendMessage(Text.of("pos:"+map3D.getPlayerInfo(player.getUuidAsString()).pos),true);
                     check(player.getBlockPos().add(0,-1,0),player);
                     check(player.getBlockPos().add(0,-2,0),player);
