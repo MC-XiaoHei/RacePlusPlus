@@ -3,8 +3,9 @@ package xor7studio.raceplusplus;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.text.Text;
 import xor7studio.argonlibrary.ArgonLibrary;
-import xor7studio.argonlibrary.SingleScoreboard;
 import xor7studio.util.Xor7IO;
+
+import java.util.Map;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -27,7 +28,9 @@ public class Command {
                 .register(literal("test")
                         .executes(context -> {
                             ArgonLibrary.server=context.getSource().getServer();
-                            SingleScoreboard singleScoreboard=new SingleScoreboard(ArgonLibrary.server.getPlayerManager().getPlayer("MC_XiaoHei"),"aaaa");
+                            Map<Integer,String> data=GameRule.getInstance().map3D.ranks;
+                            for(Integer key:data.keySet())
+                                Xor7IO.println(data.get(key));
                             Xor7IO.println("command run.");
                             return 1;
                         }));
