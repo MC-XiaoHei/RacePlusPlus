@@ -19,7 +19,6 @@ import xor7studio.util.Xor7Runnable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameRule {
@@ -32,13 +31,12 @@ public class GameRule {
     public Map3D map3D=new Map3D();
     public Map<String, SingleScoreboard> infoScoreboards=new HashMap<>();
     public void updateScoreboard(@NotNull ServerPlayerEntity player){
-        if(!infoScoreboards.containsKey(player.getUuidAsString()))
-            infoScoreboards.put(player.getUuidAsString(),
-                    new SingleScoreboard(player, scoreboardName,scoreboardData.size()+1));
+        infoScoreboards.put(player.getUuidAsString(),
+                new SingleScoreboard(player, scoreboardName,scoreboardData.size()+1));
         SingleScoreboard scoreboard=infoScoreboards.get(player.getUuidAsString());
         PlayerInfo info=map3D.getPlayerInfo(player.getUuidAsString());
         Time gt=map3D.getGameTime();
-        for(int i =0; i< scoreboardData.size(); i++)
+        for(int i =0; i< scoreboardData.size(); i++){
             scoreboard.setLine(i+1,scoreboardData.get(scoreboardData.size()-i-1)
                     .replace("${player.name}",player.getName().asString())
                     .replace("${player.pos}",String.valueOf(info.pos))
@@ -47,24 +45,27 @@ public class GameRule {
                     .replace("${game.time.sec}",String.valueOf(gt.second))
                     .replace("${game.time.min}",String.valueOf(gt.minute))
             );
+            if(scoreboardData.get(scoreboardData.size()-i-1).contains("${rank.list.start}")) setRankData(scoreboard,i+1, player);
+        }
     }
-    public void setRankData(SingleScoreboard scoreboard,int basic,String playerUUID){
+    public void setRankData(SingleScoreboard scoreboard,int basic,PlayerEntity player){
         int size=1;
         for(int i=0;i<scoreboardData.size();i++){
-            if(scoreboardData.get(basic+i).contains("${rank.list.end}")) size=i;
+            if(scoreboardData.get(basic+i).contains("${rank.list.end}")) {
+                size=i;
+                break;
+            }
         }
-        int rank=map3D.getPlayerInfo(playerUUID).rank;
+        int rank=map3D.getPlayerInfo(player.getUuidAsString()).rank;
         int tmp=size/2;
         int start=rank>tmp?rank-tmp:1;
         for(int i=0;i<size;i++){
             int n=basic+i;
-            scoreboard.setLine(n,scoreboardData.get(n)
+            String t=map3D.ranks.get(start+i);
+            if(t==null) scoreboard.setLine(n,"");
+            else scoreboard.setLine(n,scoreboardData.get(n)
                     .replace("${rank.list.end}","")
-                    .replace("${rank.list.data}", Objects.requireNonNull(
-                            ArgonLibrary.server
-                                    .getPlayerManager()
-                                    .getPlayer(map3D.ranks.get(start + i)))
-                            .getName().asString()));
+                    .replace("${rank.list.data}",t));
         }
     }
     @Contract("_, _ -> new")
@@ -117,6 +118,6 @@ public class GameRule {
                     check(player.getBlockPos().add(0,-2,0),player);
                 }
             }
-        }.start(10);
+        }.start(50);
     }
 }

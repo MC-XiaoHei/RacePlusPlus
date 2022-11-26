@@ -62,28 +62,20 @@ public class Map3D {
         Map<String,Integer> pos=new TreeMap<>();
         for(String key: playersInfo.keySet()){
             PlayerInfo info=playersInfo.get(key);
-            pos.put(Objects.requireNonNull(
-                    ArgonLibrary.server
-                            .getPlayerManager()
-                            .getPlayer(key))
-                    .getName().asString(),info.pos);
+            PlayerEntity player=ArgonLibrary.server
+                    .getPlayerManager()
+                    .getPlayer(UUID.fromString(key));
+            if(player != null)
+                pos.put(player.getName().asString(),info.pos);
         }
-        List<Map.Entry<String,Integer>> list = new ArrayList<Map.Entry<String,Integer>>(pos.entrySet());
+        List<Map.Entry<String,Integer>> list = new ArrayList<>(pos.entrySet());
         list.sort(Comparator.comparingInt(Map.Entry::getValue));
         Map<Integer,String> newRanks=new HashMap<>();
-        Integer i=1;
+        int i=0;
         for(Map.Entry<String,Integer> entry:list){
-            newRanks.put(i,entry.getKey());
+            newRanks.put(list.size()-i,entry.getKey());
             i++;
         }
-//        List<Map.Entry<String,PlayerInfo>> entryList=new ArrayList<>(playersInfo.entrySet());
-//        entryList.sort(new PlayerInfoPosComparator());
-//        int rank=1;
-//        for(Map.Entry<String, PlayerInfo> entry:entryList){
-//            entry.getValue().rank=rank;
-//            newRanks.put(rank,entry.getKey());
-//            rank++;
-//        }
         ranks=newRanks;
     }
     public boolean start(){
@@ -132,6 +124,7 @@ public class Map3D {
         for(int i=info.pos+1;i<=mapLength;i++)
             info.arriveTime.remove(i);
         playersInfo.replace(uuid,info);
+        updateRank();
     }
     public PlayerInfo getPlayerInfo(String uuid){
         return playersInfo.get(uuid);
