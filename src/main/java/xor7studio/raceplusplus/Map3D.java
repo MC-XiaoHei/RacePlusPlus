@@ -59,15 +59,31 @@ public class Map3D {
         }
     }
     public void updateRank(){
-        Map<Integer,String> newRanks=new HashMap<>();
-        List<Map.Entry<String,PlayerInfo>> entryList=new ArrayList<>(playersInfo.entrySet());
-        entryList.sort(new PlayerInfoPosComparator());
-        int rank=1;
-        for(Map.Entry<String, PlayerInfo> entry:entryList){
-            entry.getValue().rank=rank;
-            newRanks.put(rank,entry.getKey());
-            rank++;
+        Map<String,Integer> pos=new TreeMap<>();
+        for(String key: playersInfo.keySet()){
+            PlayerInfo info=playersInfo.get(key);
+            pos.put(Objects.requireNonNull(
+                    ArgonLibrary.server
+                            .getPlayerManager()
+                            .getPlayer(key))
+                    .getName().asString(),info.pos);
         }
+        List<Map.Entry<String,Integer>> list = new ArrayList<Map.Entry<String,Integer>>(pos.entrySet());
+        list.sort(Comparator.comparingInt(Map.Entry::getValue));
+        Map<Integer,String> newRanks=new HashMap<>();
+        Integer i=1;
+        for(Map.Entry<String,Integer> entry:list){
+            newRanks.put(i,entry.getKey());
+            i++;
+        }
+//        List<Map.Entry<String,PlayerInfo>> entryList=new ArrayList<>(playersInfo.entrySet());
+//        entryList.sort(new PlayerInfoPosComparator());
+//        int rank=1;
+//        for(Map.Entry<String, PlayerInfo> entry:entryList){
+//            entry.getValue().rank=rank;
+//            newRanks.put(rank,entry.getKey());
+//            rank++;
+//        }
         ranks=newRanks;
     }
     public boolean start(){
@@ -151,11 +167,5 @@ public class Map3D {
         }catch (NullPointerException e){
             return -1;
         }
-    }
-}
-class PlayerInfoPosComparator implements Comparator<Map.Entry>{
-    @Override
-    public int compare(Map.Entry o1, Map.Entry o2) {
-        return ((PlayerInfo)o2).pos-((PlayerInfo)o1).pos;
     }
 }
