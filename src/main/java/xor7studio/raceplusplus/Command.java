@@ -29,6 +29,7 @@ public class Command {
                         .executes(context -> {
                             ArgonLibrary.server=context.getSource().getServer();
                             Map<Integer,String> data=GameRule.getInstance().map3D.ranks;
+                            Xor7IO.println(String.valueOf(data==null));
                             for(Integer key:data.keySet())
                                 Xor7IO.println(data.get(key));
                             Xor7IO.println("command run.");

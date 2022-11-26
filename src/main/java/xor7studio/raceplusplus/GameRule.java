@@ -110,6 +110,7 @@ public class GameRule {
                 List<ServerPlayerEntity> players=new CopyOnWriteArrayList<>(ArgonLibrary.server.getPlayerManager().getPlayerList());
                 for (ServerPlayerEntity player : players) {
                     map3D.update(player);
+                    map3D.updateRank();
                     updateScoreboard(player);
                     player.sendMessage(Text.of("pos:"+map3D.getPlayerInfo(player.getUuidAsString()).pos),true);
                     check(player.getBlockPos().add(0,-1,0),player);

@@ -58,10 +58,12 @@ public class Config {
     public void loadAll(){
         List<String> powerBlocksToml= func_block.getList("registry.powerBlocks"),
                    effectBlocksToml= func_block.getList("registry.effectBlocks");
-        for(String key:powerBlocksToml)
-            powerBlocks.add(func_block.getTable(key).to(PowerBlock.class));
-        for(String key:effectBlocksToml)
-            effectBlocks.add(func_block.getTable(key).to(EffectBlock.class));
+        if(powerBlocksToml!=null)
+            for(String key:powerBlocksToml)
+                powerBlocks.add(func_block.getTable(key).to(PowerBlock.class));
+        if(powerBlocksToml!=null)
+            for(String key:effectBlocksToml)
+                effectBlocks.add(func_block.getTable(key).to(EffectBlock.class));
         Xor7IO.println("Config loaded");
     }
 
