@@ -29,12 +29,13 @@ public class GameRule {
     public String scoreboardName ="Race Plus Plus";
     public List<String> scoreboardData=Config.getInstance().getScoreboardData();
     public Map3D map3D=new Map3D();
+    public int scoreboardRankSize =1, scoreboardRankBasic=1;
     public Map<String, SingleScoreboard> infoScoreboards=new HashMap<>();
     public void updateScoreboard(@NotNull ServerPlayerEntity player){
-        infoScoreboards.put(player.getUuidAsString(),
+        infoScoreboards.put(player.getName().asString(),
                 new SingleScoreboard(player, scoreboardName,scoreboardData.size()+1));
-        SingleScoreboard scoreboard=infoScoreboards.get(player.getUuidAsString());
-        PlayerInfo info=map3D.getPlayerInfo(player.getUuidAsString());
+        SingleScoreboard scoreboard=infoScoreboards.get(player.getName().asString());
+        PlayerInfo info=map3D.getPlayerInfo(player.getName().asString());
         Time gt=map3D.getGameTime();
         for(int i =0; i< scoreboardData.size(); i++){
             scoreboard.setLine(i+1,scoreboardData.get(scoreboardData.size()-i-1)
@@ -44,28 +45,16 @@ public class GameRule {
                     .replace("${player.rank}",String.valueOf(info.rank))
                     .replace("${game.time.sec}",String.valueOf(gt.second))
                     .replace("${game.time.min}",String.valueOf(gt.minute))
-            );
-            if(scoreboardData.get(scoreboardData.size()-i-1).contains("${rank.list.start}")) setRankData(scoreboard,i+1, player);
-        }
-    }
-    public void setRankData(SingleScoreboard scoreboard,int basic,PlayerEntity player){
-        int size=1;
-        for(int i=0;i<scoreboardData.size();i++){
-            if(scoreboardData.get(basic+i).contains("${rank.list.end}")) {
-                size=i;
-                break;
-            }
-        }
-        int rank=map3D.getPlayerInfo(player.getUuidAsString()).rank;
-        int tmp=size/2;
-        int start=rank>tmp?rank-tmp:1;
-        for(int i=0;i<size;i++){
-            int n=basic+i;
-            String t=map3D.ranks.get(start+i);
-            if(t==null) scoreboard.setLine(n,"");
-            else scoreboard.setLine(n,scoreboardData.get(n)
+                    .replace("${rank.list.start}","")
                     .replace("${rank.list.end}","")
-                    .replace("${rank.list.data}",t));
+//                    .replace("${rank.list.data1}",info.scoreboardRank.getOrDefault(scoreboardRankBasic+1,"1"))
+//                    .replace("${rank.list.data2}",info.scoreboardRank.getOrDefault(scoreboardRankBasic+2,"2"))
+//                    .replace("${rank.list.data3}",info.scoreboardRank.getOrDefault(scoreboardRankBasic+3,"3"))
+//                    .replace("${rank.list.data4}",info.scoreboardRank.getOrDefault(scoreboardRankBasic+4,"4"))
+//                    .replace("${rank.list.data5}",info.scoreboardRank.getOrDefault(scoreboardRankBasic+5,"5"))
+            );
+            for(Integer key:info.scoreboardRank.keySet())
+                scoreboard.setLine(key,info.scoreboardRank.get(key));
         }
     }
     @Contract("_, _ -> new")
@@ -104,6 +93,12 @@ public class GameRule {
     public void init(){
         Config.getInstance().loadAll();
         Xor7IO.println("GameRule Running.");
+        for(String s:scoreboardData)
+            if(s.contains("${rank.list.start}"))
+                scoreboardRankBasic=scoreboardData.indexOf(s);
+        for(int i=scoreboardRankBasic;i<scoreboardData.size();i++)
+            if(scoreboardData.get(i).contains("${rank.list.end}"))
+                scoreboardRankSize =i-scoreboardRankBasic;
         new Xor7Runnable(){
             @Override
             public void run() {
@@ -113,7 +108,7 @@ public class GameRule {
                     map3D.update(player);
                     map3D.updateRank();
                     updateScoreboard(player);
-                    player.sendMessage(Text.of("pos:"+map3D.getPlayerInfo(player.getUuidAsString()).pos),true);
+                    player.sendMessage(Text.of("pos:"+map3D.getPlayerInfo(player.getName().asString()).pos),true);
                     check(player.getBlockPos().add(0,-1,0),player);
                     check(player.getBlockPos().add(0,-2,0),player);
                 }

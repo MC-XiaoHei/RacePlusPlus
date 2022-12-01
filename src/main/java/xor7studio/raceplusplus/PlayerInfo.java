@@ -10,4 +10,5 @@ public class PlayerInfo {
     public int rank;
     public Map<Integer,Long> arriveTime=new HashMap<>();
     public boolean complete=false;
+    public Map<Integer,String> scoreboardRank=new HashMap<>();
 }

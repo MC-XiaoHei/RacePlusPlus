@@ -62,9 +62,7 @@ public class Map3D {
         Map<String,Integer> pos=new TreeMap<>();
         for(String key: playersInfo.keySet()){
             PlayerInfo info=playersInfo.get(key);
-            PlayerEntity player=ArgonLibrary.server
-                    .getPlayerManager()
-                    .getPlayer(UUID.fromString(key));
+            PlayerEntity player=ArgonLibrary.getServerPlayer(key);
             if(player != null)
                 pos.put(player.getName().asString(),info.pos);
         }
@@ -74,6 +72,7 @@ public class Map3D {
         int i=0;
         for(Map.Entry<String,Integer> entry:list){
             newRanks.put(list.size()-i,entry.getKey());
+            playersInfo.get(entry.getKey()).rank=list.size()-i;
             i++;
         }
         ranks=newRanks;
@@ -104,15 +103,15 @@ public class Map3D {
         return getTimeDifference(startTime,time);
     }
     public void update(@NotNull PlayerEntity player){
-        String uuid=player.getUuidAsString();
-        if(!playersInfo.containsKey(uuid))
-            playersInfo.put(uuid,new PlayerInfo());
+        String name=player.getName().asString();
+        if(!playersInfo.containsKey(name))
+            playersInfo.put(name,new PlayerInfo());
         PlayerInfo info=new PlayerInfo();
         if(info.pos==-1) {
             info.complete=true;
             return;
         }
-        info.section=inWhichSection(getPlayerInfo(uuid).section,player.getPos());
+        info.section=inWhichSection(getPlayerInfo(name).section,player.getPos());
         info.pos=getPos(player, info.section);
         if(info.pos==-1) return;
         info.round=info.pos/roundSectionNum;
@@ -123,11 +122,22 @@ public class Map3D {
             else time=info.arriveTime.get(i);
         for(int i=info.pos+1;i<=mapLength;i++)
             info.arriveTime.remove(i);
-        playersInfo.replace(uuid,info);
+        playersInfo.replace(name,info);
         updateRank();
+        int rank=getPlayerInfo(player.getName().asString()).rank;
+        int tmp=GameRule.getInstance().scoreboardRankSize /2;
+        int start=rank>tmp?rank-tmp:1;
+        info.scoreboardRank=new HashMap<>();
+        for(int i = 0; i<=GameRule.getInstance().scoreboardRankSize; i++){
+            int n=GameRule.getInstance().scoreboardRankBasic-i;
+            String t=ranks.get(start+i);
+            if(t==null) t="";
+            info.scoreboardRank.put(n-1,t);
+        }
+        playersInfo.replace(name,info);
     }
-    public PlayerInfo getPlayerInfo(String uuid){
-        return playersInfo.get(uuid);
+    public PlayerInfo getPlayerInfo(String name){
+        return playersInfo.get(name);
     }
     public Vec3d readPoint(@NotNull Scanner scanner){
         return new Vec3d(scanner.nextDouble(),scanner.nextDouble(),scanner.nextDouble());
