@@ -31,6 +31,7 @@ public class GameRule {
     public Map3D map3D=new Map3D();
     public int scoreboardRankSize =1, scoreboardRankBasic=1;
     public Map<String, SingleScoreboard> infoScoreboards=new HashMap<>();
+    public Map<String,Long> lastVelocityGiven=new HashMap<>();
     public void updateScoreboard(@NotNull ServerPlayerEntity player){
         infoScoreboards.put(player.getName().asString(),
                 new SingleScoreboard(player, scoreboardName,scoreboardData.size()+1));
@@ -67,10 +68,15 @@ public class GameRule {
         return new Vec2f((float) x, (float) z);
     }
     public void giveVelocity(@NotNull PlayerEntity player, @NotNull Config.PowerBlock powerBlock, float direction){
-        player.velocityModified=true;
-        Vec2f vec2f=parseDirection(direction, powerBlock.xPower);
-        player.takeKnockback(1,-vec2f.x,-vec2f.y);
-        player.setVelocity(player.getVelocity().add(0, powerBlock.yPower*0.1,0));
+        if(lastVelocityGiven.containsKey(player.getName().asString()) &&
+                System.currentTimeMillis()-lastVelocityGiven.get(player.getName().asString())>50 ||
+                !lastVelocityGiven.containsKey(player.getName().asString())){
+            player.velocityModified=true;
+            Vec2f vec2f=parseDirection(direction, powerBlock.xPower);
+            player.takeKnockback(1,-vec2f.x,-vec2f.y);
+            player.setVelocity(player.getVelocity().add(0, powerBlock.yPower*0.1,0));
+            lastVelocityGiven.put(player.getName().asString(),System.currentTimeMillis());
+        }
     }
     public void check(BlockPos blockPos,ServerPlayerEntity player){
         String data = ArgonLibrary.server

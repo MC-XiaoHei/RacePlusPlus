@@ -5,8 +5,6 @@ import net.minecraft.text.Text;
 import xor7studio.argonlibrary.ArgonLibrary;
 import xor7studio.util.Xor7IO;
 
-import java.util.Map;
-
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class Command {
@@ -25,14 +23,9 @@ public class Command {
             }));
         });
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {dispatcher
-                .register(literal("test")
+                .register(literal("reloadcfg")
                         .executes(context -> {
-                            ArgonLibrary.server=context.getSource().getServer();
-                            Map<Integer,String> data=GameRule.getInstance().map3D.ranks;
-                            if(data!=null)
-                                for(Integer key:data.keySet())
-                                    Xor7IO.println(data.get(key));
-                            Xor7IO.println("command run.");
+                            Config.getInstance().loadAll();
                             return 1;
                         }));
         });
